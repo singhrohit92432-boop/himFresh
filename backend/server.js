@@ -1,130 +1,99 @@
+require("dns").setServers(["8.8.8.8", "1.1.1.1"]);
 require("dotenv").config();
+console.log("🔥 SERVER FILE LOADED - NEW CODE ACTIVE");
 const express = require("express");
 const cors = require("cors");
+const connectDB = require("./config/db");
+const Product = require("./models/Product");
 
 const app = express();
+app.use((req, res, next) => {
+  console.log("🔥 REQUEST HIT:", req.method, req.url);
+  next();
+});
+
+// Connect DB
+connectDB();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// In-memory data
-let products = [
-  {
-    id: 1,
-    name: "Organic Honey",
-    price: 299
-  },
-  {
-    id: 2,
-    name: "Apple Jam",
-    price: 199
-  },
-  {
-    id: 3,
-    name: "Herbal Tea",
-    price: 149
-  }
-];
-
-// Test Route
+/* ---------------- TEST ROUTE ---------------- */
 app.get("/", (req, res) => {
-  res.json({ message: "HimFresh Backend is Running 🚀" });
+  res.json({ message: "HimFresh Backend Running 🚀" });
 });
 
-// GET all products
-app.get("/api/products", (req, res) => {
-  res.status(200).json(products);
+/* ---------------- CREATE PRODUCT ---------------- */
+app.post("/api/products", async (req, res) => {
+  try {
+    console.log("BODY RECEIVED:", req.body);
+const product = await Product.create({
+  name: req.body.name,
+  price: req.body.price
 });
-
-// SEARCH products (Moved above :id route)
-app.get("/api/products/search", (req, res) => {
-  const query = req.query.q?.toLowerCase() || "";
-
-  const results = products.filter((product) =>
-    product.name.toLowerCase().includes(query)
-  );
-
-  res.status(200).json(results);
-});
-
-// GET product by ID
-app.get("/api/products/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-
-  const product = products.find((p) => p.id === id);
-
-  if (!product) {
-    return res.status(404).json({ message: "Product not found" });
+console.log("SAVED PRODUCT:", product);
+    res.status(201).json(product);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  res.status(200).json(product);
 });
 
-// POST new product
-app.post("/api/products", (req, res) => {
-  const { name, price } = req.body;
-
-  if (!name || !price) {
-    return res.status(400).json({
-      message: "Name and price are required"
-    });
+/* ---------------- GET ALL PRODUCTS ---------------- */
+app.get("/api/products", async (req, res) => {
+  try {
+    const products = await Product.find();
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  const newProduct = {
-    id: products.length + 1,
-    name,
-    price
-  };
-
-  products.push(newProduct);
-
-  res.status(201).json(newProduct);
 });
 
-// UPDATE product
-app.put("/api/products/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const { name, price } = req.body;
+/* ---------------- GET BY ID ---------------- */
+app.get("/api/products/:id", async (req, res) => {
+  try {
+    const product = await Product.findById(req.params.id);
+    if (!product) return res.status(404).json({ message: "Not found" });
 
-  const product = products.find((p) => p.id === id);
-
-  if (!product) {
-    return res.status(404).json({ message: "Product not found" });
+    res.status(200).json(product);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  product.name = name || product.name;
-  product.price = price || product.price;
-
-  res.status(200).json(product);
 });
 
-// DELETE product
-app.delete("/api/products/:id", (req, res) => {
-  const id = parseInt(req.params.id);
+/* ---------------- UPDATE ---------------- */
+app.put("/api/products/:id", async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
 
-  const index = products.findIndex((p) => p.id === id);
+    if (!product) return res.status(404).json({ message: "Not found" });
 
-  if (index === -1) {
-    return res.status(404).json({ message: "Product not found" });
+    res.status(200).json(product);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  products.splice(index, 1);
-
-  res.status(204).send();
-});
-// Error Handling Middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-
-  res.status(500).json({
-    message: "Something went wrong"
-  });
 });
 
-// Start Server
+/* ---------------- DELETE ---------------- */
+app.delete("/api/products/:id", async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+
+    if (!product) return res.status(404).json({ message: "Not found" });
+
+    res.status(200).json({ message: "Deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* ---------------- START SERVER ---------------- */
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server running on http://localhost:${PORT}`);
 });
