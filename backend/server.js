@@ -1,16 +1,12 @@
 require("dns").setServers(["8.8.8.8", "1.1.1.1"]);
 require("dotenv").config();
-console.log("🔥 SERVER FILE LOADED - NEW CODE ACTIVE");
+
 const express = require("express");
 const cors = require("cors");
 const connectDB = require("./config/db");
 const Product = require("./models/Product");
 
 const app = express();
-app.use((req, res, next) => {
-  console.log("🔥 REQUEST HIT:", req.method, req.url);
-  next();
-});
 
 // Connect DB
 connectDB();
@@ -27,12 +23,11 @@ app.get("/", (req, res) => {
 /* ---------------- CREATE PRODUCT ---------------- */
 app.post("/api/products", async (req, res) => {
   try {
-    console.log("BODY RECEIVED:", req.body);
-const product = await Product.create({
-  name: req.body.name,
-  price: req.body.price
-});
-console.log("SAVED PRODUCT:", product);
+    const product = await Product.create({
+      name: req.body.name,
+      price: req.body.price,
+    });
+
     res.status(201).json(product);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -49,11 +44,29 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-/* ---------------- GET BY ID ---------------- */
+/* ---------------- SEARCH PRODUCTS ---------------- */
+app.get("/api/products/search", async (req, res) => {
+  try {
+    const query = req.query.q || "";
+
+    const products = await Product.find({
+      name: { $regex: query, $options: "i" },
+    });
+
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+/* ---------------- GET PRODUCT BY ID ---------------- */
 app.get("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) return res.status(404).json({ message: "Not found" });
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
     res.status(200).json(product);
   } catch (err) {
@@ -61,7 +74,7 @@ app.get("/api/products/:id", async (req, res) => {
   }
 });
 
-/* ---------------- UPDATE ---------------- */
+/* ---------------- UPDATE PRODUCT ---------------- */
 app.put("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndUpdate(
@@ -70,7 +83,9 @@ app.put("/api/products/:id", async (req, res) => {
       { new: true }
     );
 
-    if (!product) return res.status(404).json({ message: "Not found" });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
     res.status(200).json(product);
   } catch (err) {
@@ -78,12 +93,14 @@ app.put("/api/products/:id", async (req, res) => {
   }
 });
 
-/* ---------------- DELETE ---------------- */
+/* ---------------- DELETE PRODUCT ---------------- */
 app.delete("/api/products/:id", async (req, res) => {
   try {
     const product = await Product.findByIdAndDelete(req.params.id);
 
-    if (!product) return res.status(404).json({ message: "Not found" });
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
 
     res.status(200).json({ message: "Deleted successfully" });
   } catch (err) {
