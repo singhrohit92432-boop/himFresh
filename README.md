@@ -83,4 +83,5 @@ node server.js
 ```
 ## Schema Diagram
 
-![Week 5 Schema Diagram](https://raw.githubusercontent.com/singhrohit92432-boop/himFresh/main/W5_SchemaDiagram_26100172.png)
+
+![Week 5 Schema Diagram](W5_SchemaDiagram_26100172.png.png)
