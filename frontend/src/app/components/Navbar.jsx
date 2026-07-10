@@ -1,10 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const [darkMode, setDarkMode] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    setIsLoggedIn(!!token);
+  }, []);
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setIsLoggedIn(false);
+    router.push("/login");
+  };
 
   return (
     <nav
@@ -27,13 +42,26 @@ export default function Navbar() {
           About
         </Link>
 
-        <Link href="/login" className="hover:text-yellow-300">
-          Login
-        </Link>
-
         <Link href="/dashboard" className="hover:text-yellow-300">
           Dashboard
         </Link>
+
+        <Link href="/showcase" className="hover:text-yellow-300">
+          Showcase
+        </Link>
+
+        {isLoggedIn ? (
+          <button
+            onClick={logout}
+            className="hover:text-yellow-300"
+          >
+            Logout
+          </button>
+        ) : (
+          <Link href="/login" className="hover:text-yellow-300">
+            Login
+          </Link>
+        )}
 
         <button
           onClick={() => setDarkMode(!darkMode)}

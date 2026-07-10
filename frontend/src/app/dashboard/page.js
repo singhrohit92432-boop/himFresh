@@ -1,5 +1,9 @@
+"use client";
+
+import ProtectedRoute from "../components/ProtectedRoute";
 export default function Dashboard() {
   return (
+  <ProtectedRoute>
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-6">
 
       <h1 className="text-4xl font-bold text-gray-800 mb-2">
@@ -42,6 +46,7 @@ export default function Dashboard() {
         </ul>
       </div>
 
-    </div>
+      </div>
+  </ProtectedRoute>
   );
 }

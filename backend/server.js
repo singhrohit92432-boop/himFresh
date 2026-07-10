@@ -3,17 +3,47 @@ require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
+const session = require("express-session");
+const passport = require("./config/passport");
 const connectDB = require("./config/db");
 const Product = require("./models/Product");
-
+const authRoutes = require("./routes/authRoutes");
 const app = express();
+const verifyToken = require("./middleware/authMiddleware");
+const rateLimit = require("express-rate-limit");
 
 // Connect DB
 connectDB();
 
 // Middleware
-app.use(cors());
+// Middleware
+app.use(cors({
+  origin: "http://localhost:3000",
+  credentials: true,
+}));
+
 app.use(express.json());
+
+app.use(
+  session({
+    secret: process.env.JWT_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,
+  message: {
+    message: "Too many requests. Please try again after 15 minutes.",
+  },
+});
+
+app.use("/api/auth", authRoutes);
 
 /* ---------------- TEST ROUTE ---------------- */
 app.get("/", (req, res) => {
@@ -35,7 +65,7 @@ app.post("/api/products", async (req, res) => {
 });
 
 /* ---------------- GET ALL PRODUCTS ---------------- */
-app.get("/api/products", async (req, res) => {
+app.get("/api/products", verifyToken, async (req, res) => {
   try {
     const products = await Product.find();
     res.status(200).json(products);
@@ -60,7 +90,7 @@ app.get("/api/products/search", async (req, res) => {
 });
 
 /* ---------------- GET PRODUCT BY ID ---------------- */
-app.get("/api/products/:id", async (req, res) => {
+app.get("/api/products/:id", verifyToken, async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
 

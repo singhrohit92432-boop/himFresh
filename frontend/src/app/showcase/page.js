@@ -1,3 +1,7 @@
+"use client";
+
+import ProtectedRoute from "../components/ProtectedRoute";
+
 import {
   Button,
   Input,
@@ -8,20 +12,22 @@ import {
 
 export default function Showcase() {
   return (
-    <div className="p-8 space-y-6">
-      <h1 className="text-3xl font-bold">
-        UI Components Showcase
-      </h1>
+    <ProtectedRoute>
+      <div className="p-8 space-y-6">
+        <h1 className="text-3xl font-bold">
+          UI Components Showcase
+        </h1>
 
-      <Button>Shop Now</Button>
+        <Button>Shop Now</Button>
 
-      <Input placeholder="Enter your name" />
+        <Input placeholder="Enter your name" />
 
-      <Loader />
+        <Loader />
 
-      <Toast />
+        <Toast />
 
-      <Modal />
-    </div>
+        <Modal />
+      </div>
+    </ProtectedRoute>
   );
 }
