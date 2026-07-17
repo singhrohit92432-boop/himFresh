@@ -1,8 +1,17 @@
 # Week 7 – AI Prompt Log
 
-## Prompt 1
+## AI Feature: Gemini AI Recipe Generator
+
+The AI feature generates healthy recipes based on user-provided ingredients. The backend sends prompts to the Gemini API and returns structured recipe data that is displayed in the frontend.
+
+---
+
+# Prompt Variation 1
+
+## Prompt Used
 
 Generate a healthy recipe using these ingredients:
+
 Honey, Oats, Almonds.
 
 Include:
@@ -11,19 +20,47 @@ Include:
 3. Steps
 4. Cooking Tips
 
-### Result
-The response was good but returned Markdown formatting (#, *, **), making it less suitable for displaying directly in the frontend.
+## Example Input
+
+Honey, Oats, Almonds
+
+## Example Output
+
+Honey Oat Energy Bowl
+
+Ingredients:
+- Honey
+- Oats
+- Almonds
+
+Steps:
+1. Mix oats and almonds.
+2. Add honey.
+3. Serve fresh.
+
+Cooking Tips:
+- Use fresh ingredients.
+- Add fruits for extra nutrition.
+
+## Result
+
+The response was good but returned Markdown formatting (#, *, **), making it less suitable for displaying directly in the frontend. Additional formatting was required before showing it to users.
 
 ---
 
-## Prompt 2
+# Prompt Variation 2
+
+## Prompt Used
 
 You are a professional chef.
 
 Generate a healthy recipe using:
+
 Honey, Oats, Almonds.
 
 Return ONLY valid JSON.
+
+Use this format:
 
 {
   "recipeName": "",
@@ -34,18 +71,45 @@ Return ONLY valid JSON.
 
 Do not return Markdown.
 
-### Result
-The response was clean JSON, making it easy to display using React components.
+## Example Input
+
+Honey, Oats, Almonds
+
+## Example Output
+
+{
+  "recipeName": "Honey Oat Energy Bowl",
+  "ingredients": [
+    "Oats",
+    "Honey",
+    "Almonds"
+  ],
+  "steps": [
+    "Mix oats and almonds",
+    "Add honey",
+    "Serve fresh"
+  ],
+  "tips": [
+    "Use fresh ingredients"
+  ]
+}
+
+## Result
+
+The response was clean JSON, making it easy to display using React components. The structured format reduced the need for additional frontend processing.
 
 ---
 
-## Prompt 3
+# Prompt Variation 3
+
+## Prompt Used
 
 You are an experienced nutritionist and chef.
 
 Generate a healthy recipe using the provided ingredients.
 
-Return ONLY JSON with:
+Return ONLY JSON containing:
+
 - recipeName
 - ingredients
 - steps
@@ -53,11 +117,46 @@ Return ONLY JSON with:
 
 Keep the recipe simple, healthy, and beginner-friendly.
 
-### Result
-This produced the most consistent and well-structured responses.
+## Example Input
+
+Honey, Oats, Almonds
+
+## Example Output
+
+{
+  "recipeName": "Healthy Honey Almond Oats",
+  "ingredients": [
+    "Oats",
+    "Honey",
+    "Almonds"
+  ],
+  "steps": [
+    "Prepare oats",
+    "Add almonds",
+    "Mix with honey"
+  ],
+  "tips": [
+    "Best served fresh",
+    "Can add seasonal fruits"
+  ]
+}
+
+## Result
+
+This produced the most consistent and well-structured responses. It generated simple recipes with clear instructions while maintaining valid JSON formatting.
 
 ---
 
 # Best Prompt
 
-Prompt 3 produced the best results because it consistently returned valid JSON and generated clear, beginner-friendly recipes. The structured format made it easy to render the recipe in the frontend using headings, bullet points, and numbered lists without additional parsing.
+Prompt 3 worked best because it consistently returned valid JSON and generated clear, beginner-friendly recipes.
+
+The structured output format made it easy to render the recipe in the frontend without additional parsing. The nutritionist and chef role also improved the quality and health-focused nature of the generated recipes.
+
+---
+
+# System Prompt / Role Used
+
+The AI was instructed to behave as an experienced nutritionist and chef.
+
+This helped Gemini generate healthy, structured, and beginner-friendly recipes suitable for the HimFresh application.
