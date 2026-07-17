@@ -49,6 +49,9 @@ export default function Navbar() {
         <Link href="/showcase" className="hover:text-yellow-300">
           Showcase
         </Link>
+        <Link href="/ai" className="hover:text-yellow-300">
+  🍲 AI Recipe
+</Link>
 
         {isLoggedIn ? (
           <button

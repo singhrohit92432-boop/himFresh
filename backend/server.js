@@ -11,6 +11,7 @@ const authRoutes = require("./routes/authRoutes");
 const app = express();
 const verifyToken = require("./middleware/authMiddleware");
 const rateLimit = require("express-rate-limit");
+const aiRoutes = require("./routes/aiRoutes");
 
 // Connect DB
 connectDB();
@@ -44,6 +45,7 @@ const authLimiter = rateLimit({
 });
 
 app.use("/api/auth", authRoutes);
+app.use("/api/ai", aiRoutes);
 
 /* ---------------- TEST ROUTE ---------------- */
 app.get("/", (req, res) => {
