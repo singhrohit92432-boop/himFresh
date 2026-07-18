@@ -147,11 +147,10 @@ This produced the most consistent and well-structured responses. It generated si
 
 ---
 
+
 # Best Prompt
 
-Prompt 3 worked best because it consistently returned valid JSON and generated clear, beginner-friendly recipes.
-
-The structured output format made it easy to render the recipe in the frontend without additional parsing. The nutritionist and chef role also improved the quality and health-focused nature of the generated recipes.
+Prompt 3 worked best because it consistently returned valid JSON while generating clear, beginner-friendly recipes. The structured JSON format made it easy to display recipe names, ingredients, cooking steps, and tips in the frontend without additional parsing or formatting. Assigning the AI the role of an experienced nutritionist and chef improved the quality of the generated recipes by making them healthier and more practical. This prompt provided the most reliable and consistent responses for the HimFresh application.
 
 ---
 
